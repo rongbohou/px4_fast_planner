@@ -13,6 +13,7 @@ from geometry_msgs.msg import Transform, Twist
 from tf.transformations import quaternion_from_euler
 from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import PositionTarget
+from datetime import datetime
 
 class MessageConverter:
     def __init__(self):
@@ -34,6 +35,9 @@ class MessageConverter:
         # Subscriber for Fast-Planner reference trajectory
         rospy.Subscriber(fast_planner_traj_topic, PositionCommand, self.fastPlannerTrajCallback, tcp_nodelay=True)
 
+        self.start = datetime.now()
+        self.set_start = 0
+        
         rospy.spin()
 
     def fastPlannerTrajCallback(self, msg):
@@ -103,8 +107,13 @@ class MessageConverter:
             target_raw_pose.type_mask = PositionTarget.IGNORE_PX + PositionTarget.IGNORE_PY + PositionTarget.IGNORE_PZ \
                             + PositionTarget.IGNORE_VX + PositionTarget.IGNORE_VY + PositionTarget.IGNORE_VZ \
                             + PositionTarget.IGNORE_YAW
-                            
-        self.setpoint_raw_pub.publish(target_raw_pose)             
+        if self.set_start == 0:
+            self.start = datetime.now()
+            self.set_start = 1
+        
+        end = datetime.now()    
+        if (end - self.start).seconds > 6 or True:                        
+            self.setpoint_raw_pub.publish(target_raw_pose)             
 
 if __name__ == '__main__':
     obj = MessageConverter()
