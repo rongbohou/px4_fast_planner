@@ -3,6 +3,9 @@
     <!-- For sim -->
     <arg name="use_gazebo" default="true"/>
 
+    <!-- controller configs -->
+    <arg name="use_geo_controller" default="false" />
+
     <!-- MAVROS configs -->
     <arg name="fcu_url" default="udp://:14540@localhost:14557"/>
 
@@ -49,7 +52,7 @@
     </include>
 
     <!-- Geometric controller -->
-    <include file="$(find px4_fast_planner)/launch/geometric_controller.launch">
+    <include if="$(arg use_geo_controller)" file="$(find px4_fast_planner)/launch/geometric_controller.launch">
         <arg name="gazebo_simulation" value="$(arg use_gazebo)" />
         <arg name="max_acc" value="$(arg max_acc)" />
         <param name="Kp_x" value="6.0" />
@@ -62,6 +65,8 @@
         <arg name="init_pos_y" value="0.0" />
         <arg name="init_pos_z" value="$(arg takeoff_height)" />
     </include>
+
+    <node unless="$(arg use_geo_controller)" pkg="px4_fast_planner" name="offboard_node" type="offboard_node.py" output="screen"> </node>
 
     <!-- Camera pose publisher -->
     <!-- This node publishes tf from parent_frame to child_frame-->
