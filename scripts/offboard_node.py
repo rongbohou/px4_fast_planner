@@ -34,6 +34,7 @@ class Offboard:
         self.current_position = Point()
         self.current_yaw = 0
         self.done = 0
+        self.reach = 0
         
         '''
         ros services
@@ -115,13 +116,22 @@ class Offboard:
             else: 
                 self.local_target_pub.publish(self.cur_Position_Target)
                 # print("local_target_pub.publish")
+            
             # check reach and set hover
-            # if(abs(self.current_position.x - self.cur_Position_Target.position.x) < 0.1) \
-            #     and (abs(self.current_position.y - self.cur_Position_Target.position.y) < 0.1)  \
-            #     and (abs(self.current_position.z - self.cur_Position_Target.position.z) < 0.1):
-            #     self.setModeServer(custom_mode='HOVER')
-            #     self.done = 1
-            #     print("reach")
+            if((self.reach == 0) and abs(self.current_position.x - self.cur_Position_Target.position.x) < 0.1) \
+                and (abs(self.current_position.y - self.cur_Position_Target.position.y) < 0.1)  \
+                and (abs(self.current_position.z - self.cur_Position_Target.position.z) < 0.1):
+                # self.setModeServer(custom_mode='HOVER')
+                self.reach = 1
+                print("reach!")
+                
+            # exit
+            if((self.reach == 1) and ((abs(self.current_position.x - self.cur_Position_Target.position.x) > 0.25) \
+                or (abs(self.current_position.y - self.cur_Position_Target.position.y) > 0.25) \
+                or (abs(self.current_position.z - self.cur_Position_Target.position.z) > 0.25))):
+                self.done = 1
+                print("done!")
+                
                        
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
