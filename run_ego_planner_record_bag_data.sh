@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # input:  /mavros/local_position/odom /camera/pose /camera/depth/image_raw
+#         /move_base_simple/goal
 
 # output: /planning/ref_traj /mavros/setpoint_raw/local
 
@@ -18,6 +19,7 @@ bag_dir=~/drone/dataset/planning/
 cd $bag_dir
 
 rosbag record /mavros/local_position/odom /camera/pose /camera/depth/image_raw \
+    /move_base_simple/goal \
     /planning/ref_traj /mavros/setpoint_raw/local \
     /iris_0_ego_planner_node/goal_point /iris_0_ego_planner_node/global_list \
     /iris_0_ego_planner_node/optimal_list /iris_0_ego_planner_node/a_star_list \

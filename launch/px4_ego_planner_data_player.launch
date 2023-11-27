@@ -1,0 +1,28 @@
+<launch>
+    <!-- Planner configs -->
+    <arg name="map_size_x" default="40.0"/>
+    <arg name="map_size_y" default="40.0"/>
+    <arg name="map_size_z" default=" 5.0"/>
+
+    <arg name="odom_topic" default="/mavros/local_position/odom" />
+    <arg name="camera_pose_topic" default="/camera/pose"/>
+    <arg name="depth_topic" default="/camera/depth/image_raw"/>
+
+    <arg name="max_vel" default="1.0" />
+    <arg name="max_acc" default="2.5" />
+
+    <!-- Ego planner -->
+    <include file="$(find px4_fast_planner)/launch/px4_ego_planner_core.launch" >
+        <arg name="map_size_x" default="$(arg map_size_x)"/>
+        <arg name="map_size_y" default="$(arg map_size_y)"/>
+        <arg name="map_size_z" default="$(arg map_size_z)"/>
+
+        <arg name="odom_topic" default="$(arg odom_topic)" />
+        <arg name="depth_topic" default="$(arg depth_topic)"/>
+        <arg name="camera_pose_topic" default="$(arg camera_pose_topic)"/>
+    </include>
+
+    <!-- Rviz -->
+    <include file="$(find px4_fast_planner)/launch/rviz_ego.launch" />
+
+</launch>
